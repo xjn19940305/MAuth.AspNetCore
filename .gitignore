@@ -16,3 +16,4 @@ bld/
 project.lock.json
 
 .DS_Store
+appsettings.Development.json
