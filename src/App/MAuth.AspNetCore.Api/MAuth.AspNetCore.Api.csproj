@@ -1,0 +1,41 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+
+	<PropertyGroup>
+		<TargetFramework>net7.0</TargetFramework>
+		<Nullable>enable</Nullable>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<UserSecretsId>04b8543b-6d97-4ed7-ab80-9d26dd30805a</UserSecretsId>
+		<DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
+		<DockerfileContext>..\..</DockerfileContext>
+		<GenerateDocumentationFile>true</GenerateDocumentationFile>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="7.0.5" />
+		<PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.18.1" />
+		<PackageReference Include="Swashbuckle.AspNetCore" Version="6.5.0" />
+		<PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="7.0.5">
+			<PrivateAssets>all</PrivateAssets>
+			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+		</PackageReference>
+		<PackageReference Include="Microsoft.AspNetCore.DataProtection.StackExchangeRedis" Version="7.0.5" />
+		<PackageReference Include="Microsoft.Extensions.Caching.StackExchangeRedis" Version="7.0.5" />
+		<PackageReference Include="Pomelo.EntityFrameworkCore.MySql" Version="7.0.0" />
+		<PackageReference Include="MySql.Data" Version="8.0.33" />
+		<PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="7.0.0" />
+		<PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="7.0.5" />
+		<PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="7.0.5" />
+		<PackageReference Include="Minio" Version="5.0.0" />
+		<PackageReference Include="MongoDB.Driver" Version="2.19.2" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<ProjectReference Include="..\..\Database\MAuth.AspNetCore.Database\MAuth.AspNetCore.Database.csproj" />
+		<ProjectReference Include="..\..\Database\MAuth.AspNetCore.Mongo\MAuth.AspNetCore.Mongo.csproj" />
+		<ProjectReference Include="..\..\Database\MAuth.ASpNetCore.MySql\MAuth.AspNetCore.MySql.csproj" />
+		<ProjectReference Include="..\..\Infrastructure\MAuth.AspNetCore.Infrastructure\MAuth.AspNetCore.Infrastructure.csproj" />
+		<ProjectReference Include="..\..\Models\MAuth.AspNetCore.Models\MAuth.AspNetCore.Models.csproj" />
+		<ProjectReference Include="..\..\Service\MAuth.AspNetCore.Services\MAuth.AspNetCore.Services.csproj" />
+	</ItemGroup>
+
+</Project>
