@@ -1,109 +1,209 @@
 <template>
-    <pageMain>
-        <search-bar :fold="isFold">
-            <template #default="{ fold }">
-                <el-form :model="search" size="default" label-width="120px">
-                    <el-row>
-                        <el-col :span="12">
-                            <el-form-item label="姓名 / 手机号">
-                                <el-input v-model="search.name" placeholder="请输入姓名或者手机号，支持模糊查询" clearable />
-                            </el-form-item>
-                        </el-col>
-                    </el-row>
-                    <el-row v-show="!fold">
-                        <el-col :span="6">
-                            <el-form-item label="部门">
-                                <el-select v-model="search.department_id" clearable placeholder="请选择部门">
-                                    <el-option label="技术部" :value="1" />
-                                    <el-option label="设计部" :value="2" />
-                                    <el-option label="行政部" :value="3" />
-                                </el-select>
-                            </el-form-item>
-                        </el-col>
-                        <el-col :span="6">
-                            <el-form-item label="职位">
-                                <el-select v-model="search.department_job_id" clearable placeholder="请选择职位">
-                                    <el-option label="程序员" :value="1" />
-                                    <el-option label="设计师" :value="2" />
-                                    <el-option label="人事" :value="3" />
-                                </el-select>
-                            </el-form-item>
-                        </el-col>
-                        <el-col :span="6">
-                            <el-form-item label="角色">
-                                <el-select v-model="search.role_id" clearable placeholder="请选择角色">
-                                    <el-option label="主管" :value="1" />
-                                    <el-option label="普通职员" :value="2" />
-                                </el-select>
-                            </el-form-item>
-                        </el-col>
-                    </el-row>
-                    <el-row v-show="!fold">
-                        <el-col :span="24">
-                            <el-form-item label="角色">
-                                <el-checkbox :value="true">
-                                    备选项
-                                </el-checkbox>
-                                <el-checkbox :value="false">
-                                    备选项
-                                </el-checkbox>
-                            </el-form-item>
-                        </el-col>
-                    </el-row>
-                    <el-form-item>
-                        <el-button type="primary">
-                            <template #icon>
-                                <el-icon>
-                                    <svg-icon name="ep:search" />
-                                </el-icon>
-                            </template>
-                            筛选
-                        </el-button>
-                        <el-button>导出</el-button>
-                        <el-button type="primary" link>
-                            查看已导出记录
-                        </el-button>
-                    </el-form-item>
-                </el-form>
-            </template>
-        </search-bar>
-        <el-table :data="tableData" border style="width: 100%;margin-top:50px;">
-            <el-table-column prop="date" label="Date" width="180" />
-            <el-table-column prop="name" label="Name" width="180" />
-            <el-table-column prop="address" label="Address" />
-        </el-table>
-    </pageMain>
+    <div>
+        <pageMain>
+            <search-bar :fold="isFold">
+                <template #default="{ fold }">
+                    <el-form :model="queryFormModel" size="default" label-width="120px">
+                        <el-row>
+                            <el-col :span="8">
+                                <el-form-item label="手机号">
+                                    <el-input v-model="queryFormModel.phoneNumber" placeholder="请输入手机号" clearable />
+                                </el-form-item>
+                            </el-col>
+                            <el-col :span="8">
+                                <el-form-item label="账号">
+                                    <el-input v-model="queryFormModel.userName" placeholder="请输入账号" clearable />
+                                </el-form-item>
+                            </el-col>
+                        </el-row>
+                        <el-form-item>
+                            <el-button type="primary" @click="query">
+                                <template #icon>
+                                    <el-icon>
+                                        <svg-icon name="ep:search" />
+                                    </el-icon>
+                                </template>
+                                查询
+                            </el-button>
+                        </el-form-item>
+                    </el-form>
+                </template>
+            </search-bar>
+        </pageMain>
+        <PageMain>
+            <el-row class="mb-4">
+                <el-button type="primary" @click="Create">添加</el-button>
+            </el-row>
+            <el-table v-loading="table.loading" :data="table.data" stripe border style="width: 100%;margin-top:15px;"
+                height="100%">
+                <el-table-column prop="id" label="id" />
+                <el-table-column prop="userName" label="用户名" />
+                <el-table-column prop="nickName" label="昵称" />
+                <el-table-column prop="phoneNumber" label="手机号" align="center" />
+                <el-table-column prop="email" label="邮箱" align="center" />
+                <el-table-column prop="dateCreated" label="创建日期" align="center">
+                    <template #default="scope">
+                        {{ moment.utc(scope.row.dateCreated).local().format("YYYY-MM-DD HH:mm") }}
+                    </template>
+                </el-table-column>
+                <el-table-column label="操作" align="center">
+                    <template #default="scope">
+                        <el-row class="mb-4">
+                            <el-button type="primary" @click="Modify(scope.row.id)">修改</el-button>
+                            <el-button type="primary" @click="BindRole(scope.row.id)">绑定角色</el-button>
+                            <el-button type="danger" v-auth="'permission.remove'"
+                                @click="Delete([scope.row.id])">删除</el-button>
+                        </el-row>
+                    </template>
+                </el-table-column>
+            </el-table>
+            <div style="margin-top: 30px; display: flex; justify-content: right;">
+                <el-pagination background v-model:current-page="paging.page" v-model:page-size="paging.pageSize"
+                    :page-sizes="pageArray" layout="total, sizes, prev, pager, next, jumper" :total="total"
+                    @size-change="HandleSizeChange" @current-change="handleCurrentChange" />
+            </div>
+        </PageMain>
+        <el-drawer v-model="dialog" title="数据操作" direction="rtl" :before-close="handleClose">
+            <el-form label-position="top" label-width="100px" :model="formModel" :rules="rules" ref="roleFormRef"
+                @keyup.enter="onSubmit">
+                <el-form-item label="用户名" prop="userName">
+                    <el-input v-model="formModel.userName" />
+                </el-form-item>
+                <el-form-item label="昵称" prop="nickName">
+                    <el-input v-model="formModel.nickName" />
+                </el-form-item>
+                <el-form-item label="手机号" prop="phoneNumber">
+                    <el-input v-model="formModel.phoneNumber" />
+                </el-form-item>
+                <el-form-item label="邮箱" prop="email">
+                    <el-input v-model="formModel.email" />
+                </el-form-item>
+                <el-form-item label="密码" prop="password">
+                    <el-input type="password" v-model="formModel.password" />
+                </el-form-item>
+                <el-form-item>
+                    <el-button type="primary" @click="onSubmit">保存</el-button>
+                    <el-button @click="cancel">取消</el-button>
+                </el-form-item>
+            </el-form>
+        </el-drawer>
+        <roleSelectComponet v-model:show="selectRoleData.bindRuleShow" v-model:userId="selectRoleData.selectUserId">
+        </roleSelectComponet>
+    </div>
 </template>
   
 <script lang="ts" setup>
-let search = ref({
-    name: "",
-    department_id: "",
-    department_job_id: "",
-    role_id: ""
-}) 
-const isFold = ref(false)
+import { ElMessage, FormInstance, FormRules } from 'element-plus'
+import api from '@/api/modules/user'
+import moment from 'moment'
+const roleSelectComponet = defineAsyncComponent(() => import('./component/selectRole.vue'))
+const table = reactive<any>({
+    loading: false,
+    data: []
+})
+const isFold = false;
+const dialog = ref(false)
+const roleFormRef = ref<FormInstance>()
+let queryFormModel = ref({
+    userName: '',
+    phoneNumber: ''
+})
+const formModel = ref({
+    id: '',
+    userName: '',
+    phoneNumber: '',
+    nickName: null,
+    password: '',
+    email: '',
+})
+const rules = reactive<FormRules>({
+    userName: [
+        { required: true, message: '必填!', trigger: 'blur' },
+    ],
+})
+const selectRoleData = reactive({
+    bindRuleShow: false,
+    selectUserId: ''
+})
+const pageArray = [20, 50, 100]
+const total = ref(1)
+const paging: any = ref({
+    pageSize: 10,
+    page: 1
+})
 
-const tableData = [
-    {
-        date: '2016-05-03',
-        name: 'Tom',
-        address: 'No. 189, Grove St, Los Angeles',
-    },
-    {
-        date: '2016-05-02',
-        name: 'Tom',
-        address: 'No. 189, Grove St, Los Angeles',
-    },
-    {
-        date: '2016-05-04',
-        name: 'Tom',
-        address: 'No. 189, Grove St, Los Angeles',
-    },
-    {
-        date: '2016-05-01',
-        name: 'Tom',
-        address: 'No. 189, Grove St, Los Angeles',
-    },
-]
+onMounted(async () => {
+    console.log('mounted')
+    await query();
+})
+const HandleSizeChange = async (value: any) => {
+    paging.value!.pageSize = value
+    await query();
+}
+const handleCurrentChange = async (value: any) => {
+    paging.value!.page = value
+    await query();
+}
+
+const BindRole = (id: string) => {
+    selectRoleData.selectUserId = id
+    selectRoleData.bindRuleShow = true    
+}
+
+const query = async () => {
+    table.loading = true
+    let queryParams = Object.assign(paging.value, queryFormModel.value)
+    let res = (await api.Query(queryParams)) as any;
+    table.data = res.data
+    table.loading = false
+    total.value = res.totalElements
+    console.log(res)
+    console.log(paging)
+}
+
+const handleClose = (done: () => void) => {
+    roleFormRef.value!.resetFields()
+    formModel.value!.id = ''
+    done()
+}
+const Create = async () => {
+    dialog.value = true
+}
+const Modify = async (id: string) => {
+    dialog.value = true
+    let res = (await api.Get(id)) as any
+    formModel.value = res
+    console.log(id)
+}
+const Delete = async (ids: string[]) => {
+    console.log(ids)
+    await api.Delete(ids)
+    await query();
+    ElMessage.success('删除成功!')
+}
+const onSubmit = async () => {
+    await roleFormRef.value!.validate(async (valid, fields) => {
+        if (valid) {            
+            if (formModel.value.id == '') {
+                delete formModel.value!.id
+                let res = await api.Create(formModel.value)
+                roleFormRef.value!.resetFields()
+                dialog.value = false
+                ElMessage.success("添加成功!")
+            } else {
+                let res = await api.Modify(formModel.value)
+                roleFormRef.value!.resetFields()
+                dialog.value = false
+                ElMessage.success("修改成功!")
+            }
+            formModel.value!.id = ''
+            await query()
+        }
+    })
+
+}
+const cancel = () => {
+    roleFormRef.value!.resetFields()
+    dialog.value = false
+}
 </script>

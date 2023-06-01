@@ -17,35 +17,41 @@ const useUserStore = defineStore(
     const isLogin = computed(() => {
       let retn = false
       if (token.value) {
-        if (new Date().getTime() < parseInt(failure_time.value) * 1000) {
-          retn = true
-        }
+        // if (new Date().getTime() < parseInt(failure_time.value) * 1000) {
+        //   retn = true
+        // }
+        retn = true
       }
       return retn
     })
 
     // 登录
     async function login(data: {
-      account: string
+      userName: string
       password: string
     }) {
       // 通过 mock 进行登录
-      const res = await apiUser.login(data)
-      localStorage.setItem('account', res.data.account)
-      localStorage.setItem('token', res.data.token)
-      localStorage.setItem('failure_time', res.data.failure_time)
-      account.value = res.data.account
-      token.value = res.data.token
-      failure_time.value = res.data.failure_time
+      await apiUser.login(data)
+      const res = await apiUser.GetUserInfo()
+      localStorage.setItem('account', res.user.userName)
+      localStorage.setItem('token', res.user.id)
+      localStorage.setItem('permission', JSON.stringify(res.permission))
+      // localStorage.setItem('failure_time', res.data.failure_time)
+      account.value = res.user.userName
+      token.value = res.user.id
+      permissions.value = res.permission
+      // failure_time.value = res.data.failure_time
     }
     // 登出
     async function logout(redirect = router.currentRoute.value.fullPath) {
       localStorage.removeItem('account')
       localStorage.removeItem('token')
-      localStorage.removeItem('failure_time')
+      localStorage.setItem('permission', '')
+      // localStorage.removeItem('failure_time')
       account.value = ''
       token.value = ''
-      failure_time.value = ''
+      permissions.value = []
+      // failure_time.value = ''
       routeStore.removeRoutes()
       menuStore.setActived(0)
       router.push({
@@ -58,8 +64,10 @@ const useUserStore = defineStore(
     // 获取我的权限
     async function getPermissions() {
       // 通过 mock 获取权限
-      const res = await apiUser.permission()
-      permissions.value = res.data.permissions
+      // const res = await apiUser.permission()
+      // debugger
+      // permissions.value = res.data.permissions            
+      permissions.value = JSON.parse(localStorage.getItem('permission')) || [];
       return permissions.value
     }
     // 修改密码

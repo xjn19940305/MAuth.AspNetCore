@@ -56,7 +56,7 @@ router.beforeEach(async (to, from, next) => {
         next()
       }
     }
-    else {
+    else {      
       // 生成动态路由
       switch (settingsStore.settings.app.routeBaseOn) {
         case 'frontend':

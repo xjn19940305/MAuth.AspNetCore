@@ -9,12 +9,13 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
+using Org.BouncyCastle.Crypto;
 using System.Reflection;
 
 namespace MAuth.AspNetCore.Api.Controllers.Management
 {
     [ApiController]
-    [Route("api/management/[controller]/[action]")]
+    [Route("api/management/[controller]")]
     [ApiExplorerSettings(GroupName = "management")]
     public class UserController : ControllerBase
     {
@@ -66,9 +67,13 @@ namespace MAuth.AspNetCore.Api.Controllers.Management
                 })
                 .OrderByDescending(x => x.CreateDate).AsQueryable();
             if (!string.IsNullOrWhiteSpace(request.NickName))
-                data = data.Where(x => x.NickName.Contains(request.NickName));
+                data = data.Where(x => x.NickName.Contains(request.NickName.Trim()));
             if (!string.IsNullOrWhiteSpace(request.UserName))
-                data = data.Where(x => x.UserName.Contains(request.UserName));
+                data = data.Where(x => x.UserName.Contains(request.UserName.Trim()));
+            if (!string.IsNullOrWhiteSpace(request.Phonenumber))
+                data = data.Where(x => x.PhoneNumber.Contains(request.Phonenumber.Trim()));
+            if (!string.IsNullOrWhiteSpace(request.Email))
+                data = data.Where(x => x.Email.Contains(request.Email.Trim()));
             var totalElements = data.Count();
             var result = await data.Skip((request.Page - 1) * request.PageSize).Take(request.PageSize).ToListAsync();
             return Ok(new PagedViewModel<dynamic>
@@ -77,71 +82,49 @@ namespace MAuth.AspNetCore.Api.Controllers.Management
                 TotalElements = totalElements,
             });
         }
-
-        //[Authorize]
-        //[HttpGet]
-        //public async Task<dynamic> GetAdminSigninInfo()
-        //{
-        //    var User = await userManager.FindByIdAsync(userManager.GetUserId(HttpContext.User));
-        //    var Role = await userManager.GetRolesAsync(User);
-        //    var roleIds = await dbContext.Roles.Where(x => Role.Contains(x.Name)).Select(x => new { x.Id, Role = x.Name }).ToListAsync();
-        //    var Module = await dbContext.RoleModules
-        //        .Where(x => roleIds.Select(g => g.Id).Contains(x.RoleId))
-        //        .Select(x => x.Module).Where(x => x.Type == Marketing.Model.Enums.ModuleTypeEnum.MODULE)
-        //        .OrderBy(x => x.Sort).ToListAsync();
-        //    var route = new RouterModel()
-        //    {
-        //        children = new List<RouterModel>(),
-        //        router = "root"
-        //    };
-        //    var RootList = Module.Where(x => x.ParentId == "0").ToList();
-        //    foreach (var m in RootList)
-        //    {
-        //        var model = new RouterModel
-        //        {
-        //            router = m.Component,
-        //            path = m.Path,
-        //            name = m.Name,
-        //            icon = m.Icon,
-        //            invisible = m.Invisible
-        //        };
-        //        RecursionRoute(Module, m, model);
-        //        route.children.Add(model);
-        //    }
-        //    return new
-        //    {
-        //        User = new
-        //        {
-        //            User.Id,
-        //            User.Email,
-        //            User.IsDelete,
-        //            User.UserName,
-        //            User.PhoneNumber,
-        //            User.Picture
-        //        },
-        //        Role = roleIds,
-        //        route
-        //    };
-        //}
-        //private void RecursionRoute(List<Module> list, Module module, RouterModel current)
-        //{
-        //    var childList = list.Where(x => x.ParentId == module.Id).ToList();
-        //    foreach (var item in childList)
-        //    {
-        //        if (current.children == null)
-        //            current.children = new List<RouterModel>();
-        //        var model = new RouterModel
-        //        {
-        //            router = item.Component,
-        //            path = item.Path,
-        //            name = item.Name,
-        //            icon = item.Icon,
-        //            invisible = item.Invisible
-        //        };
-        //        RecursionRoute(list, item, model);
-        //        current.children.Add(model);
-        //    }
-        //}
+        /// <summary>
+        /// 根据ID获取用户信息
+        /// </summary>
+        /// <param name="UserId"></param>
+        /// <returns></returns>
+        [HttpGet("{UserId}")]
+        public async Task<IActionResult> Get([FromRoute] string UserId)
+        {
+            var data = await dbContext.Users
+                .Where(x => x.Id == UserId)
+                .Select(x => new
+                {
+                    x.Id,
+                    x.UserName,
+                    x.NickName,
+                    x.PhoneNumber,
+                    x.Email
+                }).FirstOrDefaultAsync();
+            return Ok(data);
+        }
+        [Authorize]
+        [HttpGet("GetUserInfo")]
+        public async Task<IActionResult> GetUserInfo()
+        {
+            var User = await userManager.FindByIdAsync(userManager.GetUserId(HttpContext.User));
+            var permission = await (from u in dbContext.UserRoles
+                                    join rl in dbContext.Roles on u.RoleId equals rl.Id
+                                    join claim in dbContext.RoleClaims on rl.Id equals claim.RoleId
+                                    where u.UserId == User.Id
+                                    select claim.ClaimValue).Distinct().ToListAsync();
+            return Ok(new
+            {
+                User = new
+                {
+                    User.Id,
+                    User.UserName,
+                    User.NickName,
+                    User.PhoneNumber,
+                    User.Email,
+                },
+                permission
+            });
+        }
         /// <summary>
         /// 创建用户
         /// </summary>
@@ -189,33 +172,32 @@ namespace MAuth.AspNetCore.Api.Controllers.Management
             return Ok();
         }
         /// <summary>
-        /// 根据ID获取用户信息
+        /// 删除用户
         /// </summary>
-        /// <param name="UserId"></param>
+        /// <param name="UserIds"></param>
         /// <returns></returns>
-        [HttpGet]
-        public async Task<IActionResult> Get([FromQuery] string UserId)
+        [HttpDelete]
+        public async Task<IActionResult> Delete([FromBody] string[] UserIds)
         {
-            var data = await dbContext.Users
-                .Where(x => x.Id == UserId)
-                .Select(x => new
+            foreach (var id in UserIds)
+            {
+                var user = await userManager.FindByIdAsync(id);
+                if (user != null)
                 {
-                    x.Id,
-                    x.UserName,
-                    x.NickName,
-                    x.PhoneNumber,
-                    x.Email
-                }).FirstOrDefaultAsync();
-            return Ok(data);
+                    var result = await userManager.DeleteAsync(user);
+                }
+            }
+            return Ok();
         }
+
 
         /// <summary>
         /// 根据用户ID获取绑定的角色
         /// </summary>
         /// <param name="UserId"></param>
         /// <returns></returns>
-        [HttpGet]
-        public async Task<IActionResult> GetUserBindRole([FromQuery] string UserId)
+        [HttpGet("Get/Roles/{UserId}")]
+        public async Task<IActionResult> GetUserBindRole([FromRoute] string UserId)
         {
             return Ok(await dbContext.UserRoles.Where(x => x.UserId == UserId).Select(x => x.RoleId).ToArrayAsync());
         }
@@ -224,7 +206,7 @@ namespace MAuth.AspNetCore.Api.Controllers.Management
         /// </summary>
         /// <param name="model"></param>
         /// <returns></returns>
-        [HttpPut]
+        [HttpPut("Save/Roles")]
         public async Task<IActionResult> SaveRole([FromBody] SaveRoleModel model)
         {
             dbContext.UserRoles.RemoveRange(await dbContext.UserRoles.Where(f => f.UserId == model.UserId).ToListAsync());
@@ -233,13 +215,7 @@ namespace MAuth.AspNetCore.Api.Controllers.Management
             return Ok();
         }
 
-        [HttpDelete]
-        public async Task<IActionResult> Delete([FromBody] string[] UserIds)
-        {
-            dbContext.Users.RemoveRange(UserIds.Select(x => new Database.Entities.User { Id = x }));
-            await dbContext.SaveChangesAsync();
-            return Ok();
-        }
+
 
 
 

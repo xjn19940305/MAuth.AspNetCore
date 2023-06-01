@@ -7,7 +7,7 @@ function Layout() {
 const routes: RouteRecordRaw = {
     path: '/permission',
     component: Layout,
-    redirect: '/permission/authorization',
+    redirect: '/permission/user',
     name: 'permission',
     meta: {
         title: '权限管理',
@@ -20,8 +20,6 @@ const routes: RouteRecordRaw = {
             component: () => import('@/views/permission/user.vue'),
             meta: {
                 title: '用户管理',
-                sidebar: true,
-                breadcrumb: true,
             },
         },
         {
@@ -30,8 +28,7 @@ const routes: RouteRecordRaw = {
             component: () => import('@/views/permission/role.vue'),
             meta: {
                 title: '角色管理',
-                sidebar: true,
-                breadcrumb: true,
+                auth:['role.create','role.edit','role.delete']
             },
         },
         {
@@ -39,9 +36,8 @@ const routes: RouteRecordRaw = {
             name: 'authorization',
             component: () => import('@/views/permission/authorization.vue'),
             meta: {
-                title: '授权管理',
-                sidebar: true,
-                breadcrumb: true,
+                title: '授权管理',                
+                auth:['authorization.create','authorization.edit','authorization.delete']
             },
         },
     ],

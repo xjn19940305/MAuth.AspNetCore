@@ -7,7 +7,7 @@ const globalSettingsDefault: RecursiveRequired<Settings.all> = {
     colorScheme: 'light',
     elementSize: 'default',
     iconifyOfflineUse: false,
-    enablePermission: false,
+    enablePermission: true,
     enableProgress: true,
     enableDynamicTitle: false,
     routeBaseOn: 'frontend',

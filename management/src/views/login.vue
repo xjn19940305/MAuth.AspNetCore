@@ -30,17 +30,16 @@ const redirect = ref(route.query.redirect?.toString() ?? '/')
 // 登录
 const loginFormRef = ref<FormInstance>()
 const loginForm = ref({
-  account: localStorage.login_account || '',
+  userName: localStorage.login_account || '',
   password: '',
   remember: !!localStorage.login_account,
 })
 const loginRules = ref<FormRules>({
-  account: [
+  userName: [
     { required: true, trigger: 'blur', message: '请输入用户名' },
   ],
   password: [
     { required: true, trigger: 'blur', message: '请输入密码' },
-    { min: 6, max: 18, trigger: 'blur', message: '密码长度为6到18位' },
   ],
 })
 function handleLogin() {
@@ -50,11 +49,11 @@ function handleLogin() {
       userStore.login(loginForm.value).then(() => {
         loading.value = false
         if (loginForm.value.remember) {
-          localStorage.setItem('login_account', loginForm.value.account)
+          localStorage.setItem('login_account', loginForm.value.userName)
         }
         else {
           localStorage.removeItem('login_account')
-        }
+        }        
         router.push(redirect.value)
       }).catch(() => {
         loading.value = false
@@ -66,13 +65,13 @@ function handleLogin() {
 // 注册
 const registerFormRef = ref<FormInstance>()
 const registerForm = ref({
-  account: '',
+  userName: '',
   captcha: '',
   password: '',
   checkPassword: '',
 })
 const registerRules = ref<FormRules>({
-  account: [
+  userName: [
     { required: true, trigger: 'blur', message: '请输入用户名' },
   ],
   captcha: [
@@ -116,7 +115,7 @@ const resetForm = ref({
   newPassword: '',
 })
 const resetRules = ref<FormRules>({
-  account: [
+  userName: [
     { required: true, trigger: 'blur', message: '请输入用户名' },
   ],
   captcha: [
@@ -139,8 +138,8 @@ function handleReset() {
   })
 }
 
-function testAccount(account: string) {
-  loginForm.value.account = account
+function testAccount(userName: string) {
+  loginForm.value.userName = userName
   loginForm.value.password = '123456'
   handleLogin()
 }
@@ -161,8 +160,8 @@ function testAccount(account: string) {
           </h3>
         </div>
         <div>
-          <el-form-item prop="account">
-            <el-input v-model="loginForm.account" placeholder="用户名" text tabindex="1" autocomplete="on">
+          <el-form-item prop="userName">
+            <el-input v-model="loginForm.userName" placeholder="用户名" text tabindex="1" autocomplete="on">
               <template #prefix>
                 <el-icon>
                   <svg-icon name="ep:user" />
@@ -199,8 +198,8 @@ function testAccount(account: string) {
         </div>
         <div style="margin-top: 20px; margin-bottom: -20px; text-align: center;">
           <el-divider>演示账号一键登录</el-divider>
-          <el-button type="primary" size="small" plain @click="testAccount('admin')">
-            admin
+          <el-button type="primary" size="small" plain @click="testAccount('milo')">
+            milo
           </el-button>
           <el-button size="small" plain @click="testAccount('test')">
             test
@@ -215,7 +214,7 @@ function testAccount(account: string) {
         </div>
         <div>
           <el-form-item prop="account">
-            <el-input v-model="registerForm.account" placeholder="用户名" tabindex="1" autocomplete="on">
+            <el-input v-model="registerForm.userName" placeholder="用户名" tabindex="1" autocomplete="on">
               <template #prefix>
                 <el-icon>
                   <svg-icon name="ep:user" />

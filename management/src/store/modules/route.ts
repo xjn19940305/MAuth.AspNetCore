@@ -141,7 +141,7 @@ const useRouteStore = defineStore(
     // 根据权限过滤路由
     function filterAsyncRoutes<T extends Route.recordMainRaw[] | RouteRecordRaw[]>(routes: T, permissions: string[]): T {
       const res: any = []
-      routes.forEach((route) => {
+      routes.forEach((route) => {        
         if (hasPermission(permissions, route)) {
           const tmpRoute = cloneDeep(route)
           if (tmpRoute.children) {
@@ -170,7 +170,7 @@ const useRouteStore = defineStore(
     // 根据权限动态生成路由（前端生成）
     async function generateRoutesAtFront(asyncRoutes: Route.recordMainRaw[]) {
       // 设置 routes 数据
-      routesRaw.value = cloneDeep(asyncRoutes) as any
+      routesRaw.value = cloneDeep(asyncRoutes) as any      
       if (settingsStore.settings.app.enablePermission) {
         await userStore.getPermissions()
       }

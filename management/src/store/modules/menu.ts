@@ -117,7 +117,7 @@ const useMenuStore = defineStore(
       return isAuth
     }
     // 根据权限过滤导航
-    function filterAsyncMenus<T extends Menu.recordMainRaw[] | Menu.recordRaw[]>(menus: T, permissions: string[]): T {
+    function filterAsyncMenus<T extends Menu.recordMainRaw[] | Menu.recordRaw[]>(menus: T, permissions: string[]): T {      
       const res: any = []
       menus.forEach((menu) => {
         if (hasPermission(permissions, menu)) {
@@ -135,7 +135,7 @@ const useMenuStore = defineStore(
     }
     // 生成导航（前端生成）
     async function generateMenusAtFront() {
-      let accessedMenus
+      let accessedMenus      
       // 如果权限功能开启，则需要对导航数据进行筛选过滤
       if (settingsStore.settings.app.enablePermission) {
         const permissions = await userStore.getPermissions()
@@ -148,7 +148,7 @@ const useMenuStore = defineStore(
     }
     // 生成导航（后端生成）
     async function generateMenusAtBack() {
-      await apiApp.menuList().then(async (res) => {
+      await apiApp.menuList().then(async (res) => {        
         let accessedMenus: Menu.recordMainRaw[]
         // 如果权限功能开启，则需要对导航数据进行筛选过滤
         if (settingsStore.settings.app.enablePermission) {
@@ -162,7 +162,7 @@ const useMenuStore = defineStore(
       }).catch(() => {})
     }
     // 切换主导航
-    function setActived(data: number | string) {
+    function setActived(data: number | string) {          
       if (typeof data === 'number') {
         // 如果是 number 类型，则认为是主导航的索引
         actived.value = data

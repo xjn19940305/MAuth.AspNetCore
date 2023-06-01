@@ -25,6 +25,7 @@ export default [
           'permission.create',
           'permission.edit',
           'permission.remove',
+          'role.create'
         ]
       }
       else if (headers.token.indexOf('test') === 0) {

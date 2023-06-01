@@ -78,7 +78,7 @@ builder.Services.AddSwaggerGen(c =>
     var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
     var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
     c.IncludeXmlComments(xmlPath);
-    var xmlMSLPModelFile = $"{Assembly.Load("Marketing.Model").GetName().Name}.xml";
+    var xmlMSLPModelFile = $"{Assembly.Load("MAuth.AspNetCore.Models").GetName().Name}.xml";
     c.IncludeXmlComments(Path.Combine(AppContext.BaseDirectory, xmlMSLPModelFile));
 });
 #endregion

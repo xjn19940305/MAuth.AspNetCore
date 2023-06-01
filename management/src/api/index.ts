@@ -8,6 +8,7 @@ const api = axios.create({
   baseURL: (import.meta.env.DEV && import.meta.env.VITE_OPEN_PROXY === 'true') ? '/proxy/' : import.meta.env.VITE_APP_API_BASEURL,
   timeout: 1000 * 60,
   responseType: 'json',
+  withCredentials: true
 })
 
 api.interceptors.request.use(
@@ -38,21 +39,21 @@ api.interceptors.response.use(
      * 规则是当 status 为 1 时表示请求成功，为 0 时表示接口需要登录或者登录状态失效，需要重新登录
      * 请求出错时 error 会返回错误信息
      */
-    if (response.data.status === 1) {
-      if (response.data.error !== '') {
-        // 这里做错误提示，如果使用了 element plus 则可以使用 Message 进行提示
-        // ElMessage.error(options)
-        return Promise.reject(response.data)
-      }
-    }
-    else {
-      useUserStore().logout()
-    }
+
     return Promise.resolve(response.data)
   },
   (error) => {
     let message = error.message
-    if (message === 'Network Error') {
+    if (error.response.status === 400) {
+      message = error.response.data
+    }
+    else if (error.response.status === 401) {
+      message = '登录已过期请重新登录!'
+    }
+    else if (error.response.status === 500) {
+      message = error.response.data.message
+    }
+    else if (message === 'Network Error') {
       message = '后端网络故障'
     }
     else if (message.includes('timeout')) {
