@@ -143,8 +143,7 @@ namespace MAuth.AspNetCore.Api.Controllers.Management
             if (!string.IsNullOrEmpty(model.Password))
             {
                 await userManager.AddPasswordAsync(user, model.Password);
-            }
-            await dbContext.SaveChangesAsync();
+            }            
             var result = await userManager.CreateAsync(user);
             if (result.Succeeded)
                 return Ok();

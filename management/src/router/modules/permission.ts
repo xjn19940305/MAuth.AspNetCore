@@ -20,6 +20,7 @@ const routes: RouteRecordRaw = {
             component: () => import('@/views/permission/user.vue'),
             meta: {
                 title: '用户管理',
+                  auth:['user.create','user.edit','user.delete','user.bindrole','user.search']
             },
         },
         {
@@ -28,7 +29,7 @@ const routes: RouteRecordRaw = {
             component: () => import('@/views/permission/role.vue'),
             meta: {
                 title: '角色管理',
-                auth:['role.create','role.edit','role.delete']
+                auth:['role.create','role.edit','role.delete','role.search']
             },
         },
         {

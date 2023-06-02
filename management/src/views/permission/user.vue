@@ -1,18 +1,20 @@
 <template>
     <div>
-        <pageMain>
+        <pageMain v-auth="'user.search'">
             <search-bar :fold="isFold">
                 <template #default="{ fold }">
                     <el-form :model="queryFormModel" size="default" label-width="120px">
                         <el-row>
                             <el-col :span="8">
                                 <el-form-item label="手机号">
-                                    <el-input v-model="queryFormModel.phoneNumber" placeholder="请输入手机号" clearable />
+                                    <el-input @keydown.enter="query" v-model="queryFormModel.phoneNumber"
+                                        placeholder="请输入手机号" clearable />
                                 </el-form-item>
                             </el-col>
                             <el-col :span="8">
                                 <el-form-item label="账号">
-                                    <el-input v-model="queryFormModel.userName" placeholder="请输入账号" clearable />
+                                    <el-input @keydown.enter="query" v-model="queryFormModel.userName" placeholder="请输入账号"
+                                        clearable />
                                 </el-form-item>
                             </el-col>
                         </el-row>
@@ -32,7 +34,7 @@
         </pageMain>
         <PageMain>
             <el-row class="mb-4">
-                <el-button type="primary" @click="Create">添加</el-button>
+                <el-button type="primary" @click="Create" v-auth="'user.create'">添加</el-button>
             </el-row>
             <el-table v-loading="table.loading" :data="table.data" stripe border style="width: 100%;margin-top:15px;"
                 height="100%">
@@ -49,17 +51,17 @@
                 <el-table-column label="操作" align="center">
                     <template #default="scope">
                         <el-row class="mb-4">
-                            <el-button type="primary" @click="Modify(scope.row.id)">修改</el-button>
-                            <el-button type="primary" @click="BindRole(scope.row.id)">绑定角色</el-button>
-                            <el-button type="danger" v-auth="'permission.remove'"
-                                @click="Delete([scope.row.id])">删除</el-button>
+                            <el-button type="primary" @click="Modify(scope.row.id)" v-auth="'user.edit'">修改</el-button>
+                            <el-button type="primary" @click="BindRole(scope.row.id)"
+                                v-auth="'user.bindrole'">绑定角色</el-button>
+                            <el-button type="danger" v-auth="'user.delete'" @click="Delete([scope.row.id])">删除</el-button>
                         </el-row>
                     </template>
                 </el-table-column>
             </el-table>
             <div style="margin-top: 30px; display: flex; justify-content: right;">
-                <el-pagination background v-model:current-page="paging.page" v-model:page-size="paging.pageSize"
-                    :page-sizes="pageArray" layout="total, sizes, prev, pager, next, jumper" :total="total"
+                <el-pagination background v-model:current-page="table.paging.page" v-model:page-size="table.paging.pageSize"
+                    :page-sizes="table.pageArray" layout="total, sizes, prev, pager, next, jumper" :total="table.total"
                     @size-change="HandleSizeChange" @current-change="handleCurrentChange" />
             </div>
         </PageMain>
@@ -99,7 +101,13 @@ import moment from 'moment'
 const roleSelectComponet = defineAsyncComponent(() => import('./component/selectRole.vue'))
 const table = reactive<any>({
     loading: false,
-    data: []
+    data: [],
+    pageArray: [20, 50, 100],
+    total: 1,
+    paging: {
+        pageSize: 10,
+        page: 1
+    }
 })
 const isFold = false;
 const dialog = ref(false)
@@ -125,40 +133,35 @@ const selectRoleData = reactive({
     bindRuleShow: false,
     selectUserId: ''
 })
-const pageArray = [20, 50, 100]
-const total = ref(1)
-const paging: any = ref({
-    pageSize: 10,
-    page: 1
-})
+
 
 onMounted(async () => {
     console.log('mounted')
     await query();
 })
 const HandleSizeChange = async (value: any) => {
-    paging.value!.pageSize = value
+    table.paging!.pageSize = value
     await query();
 }
 const handleCurrentChange = async (value: any) => {
-    paging.value!.page = value
+    table.paging!.page = value
     await query();
 }
 
 const BindRole = (id: string) => {
     selectRoleData.selectUserId = id
-    selectRoleData.bindRuleShow = true    
+    selectRoleData.bindRuleShow = true
 }
 
 const query = async () => {
     table.loading = true
-    let queryParams = Object.assign(paging.value, queryFormModel.value)
+    let queryParams = Object.assign(table.paging, queryFormModel.value)
     let res = (await api.Query(queryParams)) as any;
     table.data = res.data
     table.loading = false
-    total.value = res.totalElements
+    table.total = res.totalElements
     console.log(res)
-    console.log(paging)
+    console.log(table.paging)
 }
 
 const handleClose = (done: () => void) => {
@@ -204,6 +207,7 @@ const onSubmit = async () => {
 }
 const cancel = () => {
     roleFormRef.value!.resetFields()
+    formModel.value!.id = ''
     dialog.value = false
 }
 </script>

@@ -41,7 +41,7 @@ const globalSettingsDefault: RecursiveRequired<Settings.all> = {
     enable: true,
   },
   navSearch: {
-    enable: true,
+    enable: false,
     enableHotkeys: true,
   },
   copyright: {

@@ -1,13 +1,14 @@
 <template>
     <div>
-        <pageMain>
+        <pageMain v-auth="'role.search'">
             <search-bar :fold="isFold">
                 <template #default="{ fold }">
                     <el-form :model="queryFormModel" size="default" label-width="120px">
                         <el-row>
                             <el-col :span="12">
                                 <el-form-item label="角色名称">
-                                    <el-input v-model="queryFormModel.name" placeholder="请输入角色名称" clearable />
+                                    <el-input @keydown.enter="query" v-model="queryFormModel.name" placeholder="请输入角色名称"
+                                        clearable />
                                 </el-form-item>
                             </el-col>
                         </el-row>
@@ -27,7 +28,7 @@
         </pageMain>
         <pageMain>
             <el-row class="mb-4">
-                <el-button type="primary" @click="Create">添加</el-button>
+                <el-button type="primary" @click="Create" v-auth="'role.create'">添加</el-button>
             </el-row>
             <el-table v-loading="table.loading" :data="table.data" stripe border style="width: 100%;margin-top:15px;"
                 height="100%">
@@ -43,15 +44,15 @@
                 <el-table-column label="操作" align="center">
                     <template #default="scope">
                         <el-row class="mb-4">
-                            <el-button type="primary" @click="Modify(scope.row.id)">修改</el-button>
+                            <el-button type="primary" @click="Modify(scope.row.id)" v-auth="'role.edit'">修改</el-button>
                             <el-button type="danger" v-auth="'role.delete'" @click="Delete([scope.row.id])">删除</el-button>
                         </el-row>
                     </template>
                 </el-table-column>
             </el-table>
             <div style="margin-top: 30px; display: flex; justify-content: right;">
-                <el-pagination background v-model:current-page="paging.page" v-model:page-size="paging.pageSize"
-                    :page-sizes="pageArray" layout="total, sizes, prev, pager, next, jumper" :total="total"
+                <el-pagination background v-model:current-page="table.paging.page" v-model:page-size="table.paging.pageSize"
+                    :page-sizes="table.pageArray" layout="total, sizes, prev, pager, next, jumper" :total="table.total"
                     @size-change="HandleSizeChange" @current-change="handleCurrentChange" />
             </div>
         </pageMain>
@@ -82,10 +83,15 @@ import { ElMessage, FormInstance, FormRules } from 'element-plus'
 import api from '@/api/modules/role'
 import moment from 'moment'
 
-
 const table = reactive<any>({
     loading: false,
-    data: []
+    data: [],
+    pageArray: [20, 50, 100],
+    total: 1,
+    paging: {
+        pageSize: 10,
+        page: 1
+    }
 })
 const isFold = false;
 const dialog = ref(false)
@@ -104,18 +110,13 @@ const rules = reactive<FormRules>({
         { required: true, message: '必填!', trigger: 'blur' },
     ],
 })
-const pageArray = [20, 50, 100]
-const total = ref(1)
-const paging: any = ref({
-    pageSize: 10,
-    page: 1
-})
+
 const HandleSizeChange = async (value: any) => {
-    paging.value!.pageSize = value
+    table.paging!.pageSize = value
     await query();
 }
 const handleCurrentChange = async (value: any) => {
-    paging.value!.page = value
+    table.paging!.page = value
     await query();
 }
 onMounted(async () => {
@@ -125,13 +126,13 @@ onMounted(async () => {
 
 const query = async () => {
     table.loading = true;
-    let queryParams = Object.assign(paging.value, queryFormModel.value)
+    let queryParams = Object.assign(table.paging, queryFormModel.value)
     let res = (await api.Query(queryParams)) as any;
     table.data = res.data
     table.loading = false
-    total.value = res.totalElements
+    table.total = res.totalElements
     console.log(res)
-    console.log(paging)
+    console.log(table.paging)
 }
 
 const handleClose = (done: () => void) => {
