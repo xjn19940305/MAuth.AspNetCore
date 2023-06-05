@@ -143,7 +143,7 @@ namespace MAuth.AspNetCore.Api.Controllers.Management
             if (!string.IsNullOrEmpty(model.Password))
             {
                 await userManager.AddPasswordAsync(user, model.Password);
-            }            
+            }
             var result = await userManager.CreateAsync(user);
             if (result.Succeeded)
                 return Ok();
@@ -209,7 +209,7 @@ namespace MAuth.AspNetCore.Api.Controllers.Management
         public async Task<IActionResult> SaveRole([FromBody] SaveRoleModel model)
         {
             dbContext.UserRoles.RemoveRange(await dbContext.UserRoles.Where(f => f.UserId == model.UserId).ToListAsync());
-            dbContext.AddRange(model.RoleIds.Select(x => new UserRole { UserId = model.UserId, RoleId = x }));
+            dbContext.AddRange(model.RoleIds.Distinct().Select(x => new UserRole { UserId = model.UserId, RoleId = x }));
             await dbContext.SaveChangesAsync();
             return Ok();
         }

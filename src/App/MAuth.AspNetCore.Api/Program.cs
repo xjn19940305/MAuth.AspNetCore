@@ -248,7 +248,13 @@ builder.Services.AddSingleton(sp =>
 
 
 var app = builder.Build();
-using var scope = app.Services.CreateScope();
+
+
+if (builder.Configuration.GetValue<bool>("Init"))
+{
+    using var scope = app.Services.CreateScope();
+    await new InitJob().Init(scope);
+}
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
