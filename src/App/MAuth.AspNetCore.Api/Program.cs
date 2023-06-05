@@ -1,3 +1,4 @@
+using MAuth.AspNetCore.Api.Authorizes;
 using MAuth.AspNetCore.Api.Filters;
 using MAuth.AspNetCore.Api.Services;
 using MAuth.AspNetCore.Database.Entities;
@@ -5,6 +6,7 @@ using MAuth.AspNetCore.Models.Options;
 using MAuth.AspNetCore.Mongo;
 using MAuth.AspNetCore.MySql;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Identity;
@@ -14,6 +16,7 @@ using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Minio;
+using Newtonsoft.Json.Serialization;
 using System.IdentityModel.Tokens.Jwt;
 using System.Reflection;
 using System.Text;
@@ -146,6 +149,8 @@ builder.Services.AddAuthorization(config =>
     {
         policy.RequireRole("Admin");
     });
+    config.AddPolicy("RoleQuery", policy => policy.RequireClaim("permission", "role.query"));
+    config.AddPolicy("RoleCreate", policy => policy.RequireClaim("permission", "role.create"));
 });
 builder.Services
    .AddControllers(o => o.Filters.Add(typeof(ExceptionFilter)))
@@ -154,8 +159,10 @@ builder.Services
        options.SerializerSettings.DateFormatHandling = Newtonsoft.Json.DateFormatHandling.IsoDateFormat;
        options.SerializerSettings.DateTimeZoneHandling = Newtonsoft.Json.DateTimeZoneHandling.Utc;
        options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore;
+       options.SerializerSettings.ContractResolver = new CamelCasePropertyNamesContractResolver();
    });
 
+#region 
 builder.Services
    .AddHsts(o =>
    {
@@ -181,7 +188,7 @@ builder.Services
    .AddDataProtection().PersistKeysToStackExchangeRedis(
     StackExchange.Redis.ConnectionMultiplexer.Connect(builder.Configuration["DataProteciton:Redis:Connection"]),
     builder.Configuration["DataProteciton:Redis:Key"]);
-
+#endregion 
 #region mysql
 var MySqlConnection = builder.Configuration["DB_CONNECTION"];
 builder.Services.AddDbContext<MAuthDbContext>(setup =>
@@ -239,6 +246,10 @@ builder.Services.AddSingleton(sp =>
                        //.WithSSL()
                        .Build();
 });
+
+builder.Services.AddSingleton<IAuthorizationHandler, PermissionHandler>();
+
+
 
 var app = builder.Build();
 using var scope = app.Services.CreateScope();

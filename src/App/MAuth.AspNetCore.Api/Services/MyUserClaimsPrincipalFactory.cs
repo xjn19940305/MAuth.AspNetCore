@@ -1,14 +1,20 @@
 ﻿using MAuth.AspNetCore.Database.Entities;
+using MAuth.AspNetCore.MySql;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
+using Newtonsoft.Json;
+using StackExchange.Redis;
 using System.Security.Claims;
 
 namespace MAuth.AspNetCore.Api.Services
 {
-    public class MyUserClaimsPrincipalFactory : UserClaimsPrincipalFactory<User, Role>
+    public class MyUserClaimsPrincipalFactory : UserClaimsPrincipalFactory<User, Database.Entities.Role>
     {
-        public MyUserClaimsPrincipalFactory(UserManager<User> userManager, RoleManager<Role> roleManager, IOptions<IdentityOptions> options) : base(userManager, roleManager, options)
+
+        public MyUserClaimsPrincipalFactory( UserManager<User> userManager, RoleManager<Database.Entities.Role> roleManager, IOptions<IdentityOptions> options) : base(userManager, roleManager, options)
         {
+
         }
         protected override async Task<ClaimsIdentity> GenerateClaimsAsync(User user)
         {
@@ -23,6 +29,6 @@ namespace MAuth.AspNetCore.Api.Services
             }
             return identity;
         }
- 
+
     }
 }

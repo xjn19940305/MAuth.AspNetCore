@@ -1,7 +1,9 @@
-﻿using MAuth.AspNetCore.Database.Entities;
+﻿using Amazon.Auth.AccessControlPolicy;
+using MAuth.AspNetCore.Database.Entities;
 using MAuth.AspNetCore.Models.Common;
 using MAuth.AspNetCore.Models.Roles;
 using MAuth.AspNetCore.MySql;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -11,6 +13,7 @@ namespace MAuth.AspNetCore.Api.Controllers.Management
     [ApiController]
     [Route("api/management/[controller]")]
     [ApiExplorerSettings(GroupName = "management")]
+    [Authorize]
     public class RoleController : ControllerBase
     {
         private readonly UserManager<User> userManager;
@@ -34,6 +37,7 @@ namespace MAuth.AspNetCore.Api.Controllers.Management
         /// <param name="model"></param>
         /// <returns></returns>
         [HttpPost]
+        [Authorize(policy: "RoleCreate")]
         public async Task<IActionResult> Create([FromBody] CreateRoleModel model)
         {
             await roleManager.CreateAsync(new Role
@@ -98,6 +102,7 @@ namespace MAuth.AspNetCore.Api.Controllers.Management
         /// <param name="request"></param>
         /// <returns></returns>
         [HttpGet]
+        //[Authorize(policy: "RoleQuery")]
         public async Task<IActionResult> Query([FromQuery] RoleQueryModel request)
         {
             var data = dbContext.Roles.OrderBy(x => x.Sort).ThenByDescending(x => x.DateCreated).AsQueryable();
@@ -116,7 +121,7 @@ namespace MAuth.AspNetCore.Api.Controllers.Management
         [HttpGet("Authorization/Get/{RoleId}")]
         public async Task<IActionResult> GetRoleAuthorization([FromRoute] string RoleId)
         {
-            return Ok(await dbContext.RoleClaims.Where(x => x.RoleId == RoleId).Select(x => x.ClaimValue).ToListAsync());
+            return Ok(await dbContext.RoleClaims.Where(x => x.RoleId == RoleId && x.ClaimType == "permission").Select(x => x.ClaimValue).ToListAsync());
         }
         [HttpPut("Authorization/{RoleId}")]
         public async Task<IActionResult> Authorization([FromRoute] string RoleId, [FromBody] string[] data)
@@ -125,7 +130,7 @@ namespace MAuth.AspNetCore.Api.Controllers.Management
             dbContext.RoleClaims.RemoveRange(res);
             foreach (var item in data)
             {
-                dbContext.RoleClaims.Add(new RoleClaim { RoleId = RoleId, ClaimType = item, ClaimValue = item });
+                dbContext.RoleClaims.Add(new RoleClaim { RoleId = RoleId, ClaimType = "permission", ClaimValue = item });
             }
             await dbContext.SaveChangesAsync();
             return Ok();
