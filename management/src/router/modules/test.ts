@@ -23,6 +23,7 @@ const routes: RouteRecordRaw = {
                 sidebar: false,
                 breadcrumb: false,
                 activeMenu: '/tm',
+                auth: ['demo.query', 'demo.demo1', 'demo.demo2']
             },
         },
     ],

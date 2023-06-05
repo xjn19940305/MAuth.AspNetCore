@@ -1,4 +1,4 @@
-using MAuth.AspNetCore.Api.Authorizes;
+
 using MAuth.AspNetCore.Api.Filters;
 using MAuth.AspNetCore.Api.Services;
 using MAuth.AspNetCore.Database.Entities;
@@ -113,7 +113,7 @@ builder.Services.ConfigureApplicationCookie(options =>
     };
     options.Events.OnRedirectToAccessDenied = (ctx) =>
     {
-        ctx.Response.StatusCode = StatusCodes.Status401Unauthorized;
+        ctx.Response.StatusCode = StatusCodes.Status403Forbidden;
         return Task.CompletedTask;
     };
     options.ExpireTimeSpan = TimeSpan.FromDays(30);
@@ -129,18 +129,8 @@ builder.Services
             jwtHandler.InboundClaimTypeMap.Clear();
         }
         builder.Configuration.Bind("JwtBearerOptions", options);
+        //设置秘钥
         options.TokenValidationParameters.IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes("MAuth_2023_05_27"));
-        // 配置Token验证参数
-        //options.TokenValidationParameters = new TokenValidationParameters
-        //{
-        //    ValidateIssuer = true,
-        //    ValidateAudience = true,
-        //    ValidateLifetime = true,
-        //    ValidateIssuerSigningKey = false,
-        //    ValidIssuer = "marketing",
-        //    ValidAudience = "marketing",
-        //    IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes("marketing_2023_4_20"))
-        //};
     });
 builder.Services.AddAuthorization(config =>
 {
@@ -149,6 +139,15 @@ builder.Services.AddAuthorization(config =>
     {
         policy.RequireRole("Admin");
     });
+    config.AddPolicy("Demo", policy =>
+    {
+        policy.RequireClaim("permission", "demo.demo1");
+        policy.RequireClaim("permission", "demo.demo2");
+    });
+
+    config.AddPolicy("Demo1", policy => policy.RequireClaim("permission", "demo.demo1"));
+    config.AddPolicy("Demo2", policy => policy.RequireClaim("permission", "demo.demo2"));
+
     config.AddPolicy("RoleQuery", policy => policy.RequireClaim("permission", "role.query"));
     config.AddPolicy("RoleCreate", policy => policy.RequireClaim("permission", "role.create"));
 });
@@ -246,9 +245,6 @@ builder.Services.AddSingleton(sp =>
                        //.WithSSL()
                        .Build();
 });
-
-builder.Services.AddSingleton<IAuthorizationHandler, PermissionHandler>();
-
 
 
 var app = builder.Build();

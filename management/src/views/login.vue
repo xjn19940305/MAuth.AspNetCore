@@ -199,10 +199,16 @@ function testAccount(userName: string) {
         <div style="margin-top: 20px; margin-bottom: -20px; text-align: center;">
           <el-divider>演示账号一键登录</el-divider>
           <el-button type="primary" size="small" plain @click="testAccount('milo')">
-            milo
+            milo(管理员)
           </el-button>
-          <el-button size="small" plain @click="testAccount('test')">
-            test
+          <el-button size="small" plain @click="testAccount('test001')">
+            test001
+          </el-button>
+          <el-button size="small" plain @click="testAccount('test002')">
+            test002
+          </el-button>
+          <el-button size="small" plain @click="testAccount('test003')">
+            test003
           </el-button>
         </div>
       </el-form>

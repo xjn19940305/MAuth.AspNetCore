@@ -49,6 +49,11 @@ api.interceptors.response.use(
     }
     else if (error.response.status === 401) {
       message = '登录已过期请重新登录!'
+      const userStore = useUserStore()
+      userStore.logout();
+    }
+    else if (error.response.status === 403) {
+      message = '您无权访问该API资源!'
     }
     else if (error.response.status === 500) {
       message = error.response.data.message

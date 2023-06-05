@@ -1,6 +1,6 @@
 <template>
     <div>
-        <pageMain v-auth="'user.search'">
+        <pageMain>
             <search-bar :fold="isFold">
                 <template #default="{ fold }">
                     <el-form :model="queryFormModel" size="default" label-width="120px">
@@ -186,7 +186,7 @@ const Delete = async (ids: string[]) => {
 }
 const onSubmit = async () => {
     await roleFormRef.value!.validate(async (valid, fields) => {
-        if (valid) {            
+        if (valid) {
             if (formModel.value.id == '') {
                 delete formModel.value!.id
                 let res = await api.Create(formModel.value)

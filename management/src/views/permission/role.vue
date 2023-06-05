@@ -1,6 +1,6 @@
 <template>
     <div>
-        <pageMain v-auth="'role.search'">
+        <pageMain>
             <search-bar :fold="isFold">
                 <template #default="{ fold }">
                     <el-form :model="queryFormModel" size="default" label-width="120px">
