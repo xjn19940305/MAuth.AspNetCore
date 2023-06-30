@@ -20,7 +20,7 @@ const routes: RouteRecordRaw = {
             component: () => import('@/views/permission/user.vue'),
             meta: {
                 title: '用户管理',
-                auth: ['user.query', 'user.create', 'user.edit', 'user.delete']
+                auth: ['user.query', 'user.bindrole','user.create', 'user.edit', 'user.delete']
             },
         },
         {

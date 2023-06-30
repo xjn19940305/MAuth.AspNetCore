@@ -1,6 +1,8 @@
 
+using IGeekFan.AspNetCore.Knife4jUI;
 using MAuth.AspNetCore.Api.Filters;
 using MAuth.AspNetCore.Api.Services;
+using MAuth.AspNetCore.Api.Swaggers;
 using MAuth.AspNetCore.Database.Entities;
 using MAuth.AspNetCore.Models.Options;
 using MAuth.AspNetCore.Mongo;
@@ -78,11 +80,45 @@ builder.Services.AddSwaggerGen(c =>
                     new string[] { }
                     }
                 });
+    c.SchemaFilter<EnumSchemaFilter>();
+    //c.CustomOperationIds(apiDesc =>
+    //{
+    //    var controllerAction = apiDesc.ActionDescriptor as ControllerActionDescriptor;
+    //    return controllerAction.ActionName;
+    //});
+
+    typeof(ApiGroupNames).GetFields().Skip(1).ToList().ForEach(f =>
+    {
+        //获取枚举值上的特性
+        var info = (GroupInfoAttribute)f.GetCustomAttributes(typeof(GroupInfoAttribute), false).FirstOrDefault();
+        c.SwaggerDoc(f.Name, new OpenApiInfo
+        {
+            Title = info?.Title,
+            Version = "v1",
+            Description = info?.Title
+        });
+    });
+    //判断接口归于哪个分组                    
+    c.DocInclusionPredicate((docName, apiDescription) =>
+    {
+        //反射拿到值 
+        var actionlist = apiDescription.ActionDescriptor.EndpointMetadata.Where(x => x is ApiGroupAttribute);
+        if (actionlist.Count() > 0)
+        {
+            //判断是否包含这个分组 
+            var actionfilter = actionlist.FirstOrDefault() as ApiGroupAttribute;
+            if (actionfilter != null)
+                return actionfilter.GroupName.Count(x => x.ToString().ToLower() == docName.ToLower()) > 0;
+            else
+                return false;
+        }
+        return false;
+    });
     var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
     var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
-    c.IncludeXmlComments(xmlPath);
+    c.IncludeXmlComments(xmlPath, true);
     var xmlMSLPModelFile = $"{Assembly.Load("MAuth.AspNetCore.Models").GetName().Name}.xml";
-    c.IncludeXmlComments(Path.Combine(AppContext.BaseDirectory, xmlMSLPModelFile));
+    c.IncludeXmlComments(Path.Combine(AppContext.BaseDirectory, xmlMSLPModelFile), true);
 });
 #endregion
 
@@ -130,7 +166,7 @@ builder.Services
         }
         builder.Configuration.Bind("JwtBearerOptions", options);
         //设置秘钥
-        options.TokenValidationParameters.IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes("MAuth_2023_05_27"));
+        options.TokenValidationParameters.IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(builder.Configuration["JwtBearerOptions:SecretKey"]));
     });
 builder.Services.AddAuthorization(config =>
 {
@@ -260,10 +296,16 @@ if (builder.Configuration.GetValue<bool>("Init"))
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger(c => c.RouteTemplate = "swagger/{documentName}/swagger.json");
-    app.UseSwaggerUI(c =>
+    //app.UseSwaggerUI(c =>
+    //{
+    //    c.SwaggerEndpoint("/swagger/management/swagger.json", "Manage");
+    //    c.SwaggerEndpoint("/swagger/user/swagger.json", "User");
+    //});
+    app.UseKnife4UI(c =>
     {
-        c.SwaggerEndpoint("/swagger/management/swagger.json", "Manage");
-        c.SwaggerEndpoint("/swagger/user/swagger.json", "User");
+        c.RoutePrefix = string.Empty;
+        c.SwaggerEndpoint("/swagger/user/swagger.json", "用户端");
+        c.SwaggerEndpoint("/swagger/management/swagger.json", "管理端");
     });
 }
 //app.UseStaticFiles();

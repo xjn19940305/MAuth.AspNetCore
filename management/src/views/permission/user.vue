@@ -48,7 +48,7 @@
                         {{ moment.utc(scope.row.dateCreated).local().format("YYYY-MM-DD HH:mm") }}
                     </template>
                 </el-table-column>
-                <el-table-column label="操作" align="center">
+                <el-table-column label="操作" align="center" width="300">
                     <template #default="scope">
                         <el-row class="mb-4">
                             <el-button type="primary" @click="Modify(scope.row.id)" v-auth="'user.edit'">修改</el-button>

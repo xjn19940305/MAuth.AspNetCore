@@ -1,4 +1,5 @@
-﻿using MAuth.AspNetCore.Database.Entities;
+﻿using MAuth.AspNetCore.Api.Swaggers;
+using MAuth.AspNetCore.Database.Entities;
 using MAuth.AspNetCore.Models.Common;
 using MAuth.AspNetCore.Models.Roles;
 using MAuth.AspNetCore.Models.Users;
@@ -14,9 +15,12 @@ using System.Reflection;
 
 namespace MAuth.AspNetCore.Api.Controllers.Management
 {
+    /// <summary>
+    /// 用户管理
+    /// </summary>
     [ApiController]
     [Route("api/management/[controller]")]
-    [ApiExplorerSettings(GroupName = "management")]
+    [ApiGroup(ApiGroupNames.MANAGEMENT)]
     public class UserController : ControllerBase
     {
         private readonly UserManager<User> userManager;
@@ -102,6 +106,10 @@ namespace MAuth.AspNetCore.Api.Controllers.Management
                 }).FirstOrDefaultAsync();
             return Ok(data);
         }
+        /// <summary>
+        /// 获取用户信息以及权限
+        /// </summary>
+        /// <returns></returns>
         [Authorize]
         [HttpGet("GetUserInfo")]
         public async Task<IActionResult> GetUserInfo()

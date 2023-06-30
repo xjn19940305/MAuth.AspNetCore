@@ -12,6 +12,10 @@ namespace MAuth.AspNetCore.MySql
 {
     public class MAuthDbContext : IdentityDbContext<User, Role, string, UserClaim, UserRole, UserLogin, RoleClaim, UserToken>
     {
+
+        public virtual DbSet<Carousel> Carousels { get; set; }
+
+        public virtual DbSet<Category> Categories { get; set; }
         public MAuthDbContext(DbContextOptions options) : base(options)
         {
         }

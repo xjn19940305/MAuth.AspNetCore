@@ -1,4 +1,5 @@
 ﻿using Amazon.Auth.AccessControlPolicy;
+using MAuth.AspNetCore.Api.Swaggers;
 using MAuth.AspNetCore.Database.Entities;
 using MAuth.AspNetCore.Models.Common;
 using MAuth.AspNetCore.Models.Roles;
@@ -10,9 +11,12 @@ using Microsoft.EntityFrameworkCore;
 
 namespace MAuth.AspNetCore.Api.Controllers.Management
 {
+    /// <summary>
+    /// 角色管理
+    /// </summary>
     [ApiController]
     [Route("api/management/[controller]")]
-    [ApiExplorerSettings(GroupName = "management")]
+    [ApiGroup(ApiGroupNames.MANAGEMENT)]
     [Authorize]
     public class RoleController : ControllerBase
     {
@@ -118,11 +122,22 @@ namespace MAuth.AspNetCore.Api.Controllers.Management
                 TotalElements = totalElements
             });
         }
+        /// <summary>
+        /// 根据角色获取权限
+        /// </summary>
+        /// <param name="RoleId"></param>
+        /// <returns></returns>
         [HttpGet("Authorization/Get/{RoleId}")]
         public async Task<IActionResult> GetRoleAuthorization([FromRoute] string RoleId)
         {
             return Ok(await dbContext.RoleClaims.Where(x => x.RoleId == RoleId && x.ClaimType == "permission").Select(x => x.ClaimValue).ToListAsync());
         }
+        /// <summary>
+        /// 授权给角色
+        /// </summary>
+        /// <param name="RoleId"></param>
+        /// <param name="data"></param>
+        /// <returns></returns>
         [HttpPut("Authorization/{RoleId}")]
         public async Task<IActionResult> Authorization([FromRoute] string RoleId, [FromBody] string[] data)
         {

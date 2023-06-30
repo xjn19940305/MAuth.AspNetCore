@@ -11,6 +11,7 @@
 	</PropertyGroup>
 
 	<ItemGroup>
+		<PackageReference Include="IdentityModel" Version="6.1.0" />
 		<PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="7.0.5" />
 		<PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.18.1" />
 		<PackageReference Include="Swashbuckle.AspNetCore" Version="6.5.0" />
@@ -27,6 +28,7 @@
 		<PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="7.0.5" />
 		<PackageReference Include="Minio" Version="5.0.0" />
 		<PackageReference Include="MongoDB.Driver" Version="2.19.2" />
+		<PackageReference Include="IGeekFan.AspNetCore.Knife4jUI" Version="0.0.13" />
 	</ItemGroup>
 
 	<ItemGroup>

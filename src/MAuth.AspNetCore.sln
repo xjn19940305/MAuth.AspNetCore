@@ -11,23 +11,28 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Infrastructure", "Infrastru
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Services", "Services", "{47B7FC1F-8C4D-4CFF-992D-3F9C5DEAA799}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MAuth.AspNetCore.Api", "App\MAuth.AspNetCore.Api\MAuth.AspNetCore.Api.csproj", "{81E55989-87B4-4AE9-9756-19FC7A23C599}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MAuth.AspNetCore.Api", "App\MAuth.AspNetCore.Api\MAuth.AspNetCore.Api.csproj", "{81E55989-87B4-4AE9-9756-19FC7A23C599}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MAuth.AspNetCore.Database", "Database\MAuth.AspNetCore.Database\MAuth.AspNetCore.Database.csproj", "{3A4E37D5-3917-46ED-969D-301953852526}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MAuth.AspNetCore.Database", "Database\MAuth.AspNetCore.Database\MAuth.AspNetCore.Database.csproj", "{3A4E37D5-3917-46ED-969D-301953852526}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MAuth.AspNetCore.MySql", "Database\MAuth.ASpNetCore.MySql\MAuth.AspNetCore.MySql.csproj", "{0E89575E-4A66-4CD4-889F-78BBC879EADC}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MAuth.AspNetCore.MySql", "Database\MAuth.ASpNetCore.MySql\MAuth.AspNetCore.MySql.csproj", "{0E89575E-4A66-4CD4-889F-78BBC879EADC}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Models", "Models", "{D82E13A5-5BC1-4461-A9D4-18A0164D0E65}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MAuth.AspNetCore.Enum", "Models\MAuth.AspNetCore.Enum\MAuth.AspNetCore.Enum.csproj", "{1966B1D3-7019-4CF8-84A1-48CCF1E7DA77}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MAuth.AspNetCore.Enum", "Models\MAuth.AspNetCore.Enum\MAuth.AspNetCore.Enum.csproj", "{1966B1D3-7019-4CF8-84A1-48CCF1E7DA77}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MAuth.AspNetCore.Mongo", "Database\MAuth.AspNetCore.Mongo\MAuth.AspNetCore.Mongo.csproj", "{AF990068-6E6D-4281-B661-0E2505940B0B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MAuth.AspNetCore.Mongo", "Database\MAuth.AspNetCore.Mongo\MAuth.AspNetCore.Mongo.csproj", "{AF990068-6E6D-4281-B661-0E2505940B0B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MAuth.AspNetCore.Models", "Models\MAuth.AspNetCore.Models\MAuth.AspNetCore.Models.csproj", "{CCFEB1B5-2962-4915-BA7A-86980D007F34}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MAuth.AspNetCore.Models", "Models\MAuth.AspNetCore.Models\MAuth.AspNetCore.Models.csproj", "{CCFEB1B5-2962-4915-BA7A-86980D007F34}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MAuth.AspNetCore.Services", "Service\MAuth.AspNetCore.Services\MAuth.AspNetCore.Services.csproj", "{8CAE13AB-4141-4F5D-9452-BC5A9F17710F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MAuth.AspNetCore.Services", "Service\MAuth.AspNetCore.Services\MAuth.AspNetCore.Services.csproj", "{8CAE13AB-4141-4F5D-9452-BC5A9F17710F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MAuth.AspNetCore.Infrastructure", "Infrastructure\MAuth.AspNetCore.Infrastructure\MAuth.AspNetCore.Infrastructure.csproj", "{18ACCF4F-5F8A-4E82-B054-D65A6B42D86B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MAuth.AspNetCore.Infrastructure", "Infrastructure\MAuth.AspNetCore.Infrastructure\MAuth.AspNetCore.Infrastructure.csproj", "{18ACCF4F-5F8A-4E82-B054-D65A6B42D86B}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{A15A5356-FB5A-4639-B8F8-4E75F6879BD6}"
+	ProjectSection(SolutionItems) = preProject
+		.editorconfig = .editorconfig
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

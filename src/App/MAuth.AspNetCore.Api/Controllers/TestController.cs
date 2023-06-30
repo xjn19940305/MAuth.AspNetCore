@@ -1,16 +1,18 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using MAuth.AspNetCore.Api.Swaggers;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace MAuth.AspNetCore.Api.Controllers
 {
     [ApiController]
     [Route("api/[controller]/[action]")]
+    [ApiGroup(ApiGroupNames.USER, ApiGroupNames.MANAGEMENT)]
     public class TestController : ControllerBase
     {
         public TestController()
         {
         }
-        [Authorize(policy:"Demo1")]
+        [Authorize(policy: "Demo1")]
         [HttpGet]
         public async Task<IActionResult> demo()
         {
