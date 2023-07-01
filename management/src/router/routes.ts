@@ -6,6 +6,7 @@ import permission from './modules/permission'
 import test from './modules/test'
 import carousel from './modules/carousel'
 import category from './modules/category'
+import article from './modules/article'
 import type { Route } from '#/global'
 import useSettingsStore from '@/store/modules/settings'
 
@@ -87,8 +88,9 @@ const asyncRoutes: Route.recordMainRaw[] = [
     },
     children: [
       // BreadcrumbExample,
-      category,
       carousel,
+      category,
+      article,      
       permission,
       test
     ],

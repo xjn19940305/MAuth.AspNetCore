@@ -11,7 +11,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace MAuth.AspNetCore.MySql.Migrations
 {
     [DbContext(typeof(MAuthDbContext))]
-    [Migration("20230630073906_init")]
+    [Migration("20230701045809_init")]
     partial class init
     {
         /// <inheritdoc />
@@ -21,6 +21,43 @@ namespace MAuth.AspNetCore.MySql.Migrations
             modelBuilder
                 .HasAnnotation("ProductVersion", "7.0.5")
                 .HasAnnotation("Relational:MaxIdentifierLength", 64);
+
+            modelBuilder.Entity("MAuth.AspNetCore.Database.Entities.Article", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasColumnType("varchar(255)");
+
+                    b.Property<string>("Author")
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("CategoryId")
+                        .HasColumnType("varchar(255)");
+
+                    b.Property<string>("Content")
+                        .HasColumnType("longtext");
+
+                    b.Property<DateTime?>("DateCreated")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<DateTime?>("DateUpdate")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("Picture")
+                        .HasColumnType("longtext");
+
+                    b.Property<int?>("ReadCount")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CategoryId");
+
+                    b.ToTable("Articles");
+                });
 
             modelBuilder.Entity("MAuth.AspNetCore.Database.Entities.Carousel", b =>
                 {
@@ -332,6 +369,15 @@ namespace MAuth.AspNetCore.MySql.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
+            modelBuilder.Entity("MAuth.AspNetCore.Database.Entities.Article", b =>
+                {
+                    b.HasOne("MAuth.AspNetCore.Database.Entities.Category", "Category")
+                        .WithMany("Articles")
+                        .HasForeignKey("CategoryId");
+
+                    b.Navigation("Category");
+                });
+
             modelBuilder.Entity("MAuth.AspNetCore.Database.Entities.RoleClaim", b =>
                 {
                     b.HasOne("MAuth.AspNetCore.Database.Entities.Role", null)
@@ -381,6 +427,11 @@ namespace MAuth.AspNetCore.MySql.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("MAuth.AspNetCore.Database.Entities.Category", b =>
+                {
+                    b.Navigation("Articles");
                 });
 #pragma warning restore 612, 618
         }

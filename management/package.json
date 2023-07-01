@@ -36,7 +36,8 @@
     "qs": "^6.11.2",
     "vconsole": "^3.15.0",
     "vue": "^3.3.4",
-    "vue-router": "^4.2.1"
+    "vue-router": "^4.2.1",
+    "wangeditor": "^4.7.15"
   },
   "devDependencies": {
     "@antfu/eslint-config": "^0.39.3",

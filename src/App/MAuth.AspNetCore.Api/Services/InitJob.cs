@@ -55,6 +55,9 @@ namespace MAuth.AspNetCore.Api.Services
             await roleManager.AddClaimAsync(role, new System.Security.Claims.Claim("permission", "role.create"));
             await roleManager.AddClaimAsync(role, new System.Security.Claims.Claim("permission", "role.edit"));
             await roleManager.AddClaimAsync(role, new System.Security.Claims.Claim("permission", "role.delete"));
+            await roleManager.AddClaimAsync(role, new System.Security.Claims.Claim("permission", "category.query"));
+            await roleManager.AddClaimAsync(role, new System.Security.Claims.Claim("permission", "carousel.query"));
+            await roleManager.AddClaimAsync(role, new System.Security.Claims.Claim("permission", "article.query"));
             await roleManager.AddClaimAsync(role, new System.Security.Claims.Claim("permission", "demo.query"));
             await roleManager.AddClaimAsync(role, new System.Security.Claims.Claim("permission", "demo.demo1"));
             await roleManager.AddClaimAsync(role, new System.Security.Claims.Claim("permission", "demo.demo2"));

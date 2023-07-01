@@ -16,6 +16,8 @@ namespace MAuth.AspNetCore.MySql
         public virtual DbSet<Carousel> Carousels { get; set; }
 
         public virtual DbSet<Category> Categories { get; set; }
+
+        public virtual DbSet<Article> Articles { get; set; }
         public MAuthDbContext(DbContextOptions options) : base(options)
         {
         }

@@ -27,5 +27,7 @@ namespace MAuth.AspNetCore.Database.Entities
         public DateTime? DateCreated { get; set; } = DateTime.UtcNow;
 
         public DateTime? DateUpdate { get; set; }
+
+        public virtual ICollection<Article> Articles { get; set; } = new HashSet<Article>();
     }
 }
